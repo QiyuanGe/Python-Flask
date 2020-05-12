@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>User register</title>
+	<style type="text/css">
+	body,input{
+		margin: 0;
+		padding: 0;
+		background: #fff;
+	}
+	input{
+		display: inline-block;
+		background: #fff;
+	}
+	.container{
+		width: 100%;
+	}
+	.login-box{
+		position: relative;
+		height: 800px;
+		width: 800px;
+		top: 50px;
+		margin: 0 auto;
+		z-index: 99999;
+		background:#fff;
+		border: 7px solid #ccc;
+	}
+	.title-box{
+		position: absolute;
+		width: 300px;
+		height: 50px;
+		margin-left: 250px;
+		margin-top: 5px;
+		text-align: center;
+		font-size: 28px;
+		font-weight: 800;
+		color: #ff5000;
+		line-height: 50px;
+	}
+	.username-box{
+		position: absolute;
+		width: 800px;
+		height: 40px;
+		line-height: 40px;
+		margin-top:100px;
+		margin-left:80px;
+		font-weight: 700;
+	}
+	.username-input{
+		display: inline-block;
+		margin-left: 45px;
+	}
+	#username{
+		height: 35px;
+		width: 290px;
+		border: 2px solid #ccc;
+		border-radius: 5px;
+	}
+	.userPassword-box{
+		position: absolute;
+		width: 800px;
+		height: 40px;
+		line-height: 40px;
+		margin-top:180px;
+		margin-left:80px;
+		font-weight: 700;
+	}
+	.userPassword-input{
+		display: inline-block;
+		margin-left: 55px;
+	}
+	#userPassword{
+		height: 35px;
+		width: 290px;
+		border: 2px solid #ccc;
+		border-radius: 5px;
+	}
+	.require{
+		color: red;
+	}
+	.submit-box{
+		position:absolute;
+		width: 80px;
+		height: 40px;
+		line-height: 40px;
+		margin-top:260px;
+		margin-left:200px;
+		border-radius: 5px;
+		background: grey;
+	}
+	#submit-button{
+		display: inline-block;
+		width: 80px;
+		height: 40px;
+		border-radius: 5px;
+		background: green;
+	}
+	.goRegister-box{
+		position:absolute;
+		width: 200px;
+		height: 80px;
+		margin-top: 340px;
+		margin-left:200px;
+	}
+	</style>
+</head>
+
+<body>
+	<div class="container">
+		<div class="login-box">
+			<div class="title-box">
+				<span>User login</span>
+			</div>
+			<form action="#" method="post">
+				<div class="username-box">
+					<span class="require">*</span>
+					<label for="username">User name</label>
+					<div class="username-input">
+						<input type="text" id="username" name="username" placeholder="Please enter your user name" />
+					</div>
+				</div>
+
+				<div class="warning">
+					{% for message in get_flashed_messages() %}
+						<div class="alert alert-warning alert-dismissible" role="alert">
+			  			<strong>Warning!</strong> {{ message }}
+						</div>
+					{% endfor %}
+				</div>
+
+				<div class="userPassword-box">
+					<span class="require">*</span>
+					<label for="userPassword">Password</label>
+					<div class="userPassword-input">
+						<input type="password" id="userPassword" name="userPassword" placeholder="Please enter your password" />
+					</div>
+				</div>
+
+				<div class="submit-box">
+					<input id = "submit-button" type="submit" value="submit">
+				</div>
+				
+				<div class="goRegister-box">
+					<a href="#" style="text-decoration: none;">Don't have an account? go to register one</a>
+				</div>
+			</form>
+		</div>
+	</div>
+</body>
+</html>
