@@ -1,48 +1,65 @@
-from flask import Flask, flash, render_template, request,redirect,url_for,make_response
+from flask import Flask, flash, render_template, request,redirect,url_for,session,g
 from flask_sqlalchemy import SQLAlchemy
+import sqlite3
 
 app = Flask(__name__)
-class Config(object):
-    ##sqlachemy config
-    SQLALCHEMY_DATABASE_URI = 'mysql://Qiyuan:mysql@127.0.0.1:3306/Users'
-    SQLALCHEMY_TRACK_MODIFICATIONS = True
-app.config.from_object(Config)
-db = SQLAlchemy(app)
-app.secret_key = 'admain'
+debug = True                  
+app.secret_key = 'secret_key_1'
+db = ('user.db')
 
-## database model
-class Role(db.Model):
-    # user's role
-    __tablename__ = 'tbl_roles'
-    id = db.Column(db.Integer,primary_key = True)
-    name = db.Column(db.String(32),unique = True)
-    users = db.relationship("User", backref="role")
+##before request
+@app.before_request
+def bofore_request():
+    g.db = sqlite3.connect(db)
 
-class User(db.Model):
-    #user's information
-    __table__name = 'tbl_usersinformation'
-    id = db.Column(db.Integer,primary_key = True)
-    name = db.Column(db.String(64),unique = True)
-    password = db.Column(db.String(128),unique = False)
-    role_id = db.Column(db.Integer,db.ForeignKey("tbl_roles.id"))
+@app.teardown_request
+def teardown_request(exception):
+    db = getattr(g,'db',None)
+    if db is not None:
+        db.close()
 
-
-if __name__ == 'main':
-    db.create_all()
-    app.run(debug=True)
 
 ## login
 @app.route('/login', methods = ['GET','POST'])
 def login():
-    if request.method == "GET":
-        return render_template("login.html")
-    else:
+    if request.method == "POST":
         name = request.form.get('username')
-        passwd = request.form.get('userPassword')
-        if name == 'Cloud' and passwd == '123456' :
+        password = request.form.get('userPassword')
+        cursor = g.db.execute('select * from userinfo where User_name =? and User_password=?',[name,password])
+        if cursor.fetchone() is not None:
+            session['user'] = name
+            flash('Login successfully')
             return redirect(url_for('index'))
         else:
-            return render_template("login.html")
+            flash('NO such User!')
+            return redirect(url_for("login"))
+    return render_template('login.html')
+
+## register part
+##insert data to database
+@app.route('/register',methods=['GET','POST'])
+def register():
+    if request.method =='POST':
+        username = request.form.get('username')
+        password1 = request.form.get('userPassword')
+        password2 = request.form.get('userRePassword')
+        telephone = request.form.get('userPhone')
+        email = request.form.get('userEmail')
+        print(username,password1,password2)
+        cur = g.db.cursor()
+        cur.execute('select * from userinfo where User_name =?',[username])
+        if  cur.fetchone is None:
+            if password1 == password2:
+                sql = 'insert into userinfo (User_name, User_password,Telephone,Email)''values(?,?,?,?)'
+                data = (username,password1,telephone,email)
+                cur.execute(sql,data)
+                db.commit()
+                flash ('Successfully registered')
+                return redirect(url_for('login'))
+        else:
+            flash('Already have same username!')
+            return render_template('register.html')
+    return render_template('register.html')
 
 ## main page of website
 @app.route('/Calculator',methods = ['GET','POST'])
@@ -53,3 +70,6 @@ def index():
         c = int(a)+int(b)
         return render_template('index.html',RESULT = str(c))
     return render_template('index.html')
+
+if __name__ == 'main':
+    app.run(debug=True)
