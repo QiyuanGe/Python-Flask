@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 	<meta charset="UTF-8">
-	<title>User register</title>
+	<title>User Login</title>
 	<style type="text/css">
 	body,input{
 		margin: 0;
@@ -76,7 +76,7 @@
 		border: 2px solid #ccc;
 		border-radius: 5px;
 	}
-	.Side_num-box{
+	.Side_number-box{
 		position: absolute;
 		width: 800px;
 		height: 40px;
@@ -85,11 +85,11 @@
 		margin-left:80px;
 		font-weight: 700;
 	}
-	.Side_num-input{
+	.Side_number-input{
 		display: inline-block;
 		margin-left: 45px;
 	}
-	#Side_num{
+	#Side_number{
 		height: 35px;
 		width: 290px;
 		border: 2px solid #ccc;
@@ -170,7 +170,6 @@
 				{% endif %}
 	 		{% endwith %}
 			<form action="#" method="post">
-				
 				<div class="userID-box">
 					<span class="require">*</span>
 					<label for="userID">User ID</label>
@@ -186,25 +185,30 @@
 						<input type="text" id="username" name="username" placeholder="Please enter your user name" />
 					</div>
 				</div>
-				<div class="Side_num-box">
+				<div class="Side_number-box">
 					<span class="require">*</span>
-					<label for="Side_num">Side number</label>
-					<div class="Side_num-input">
-						<input type="text" id="Side_num" name="Side_num" placeholder="Please enter your user name" />
+					<label for="Side_number">Side number</label>
+					<div class="Side_number-input">
+						<input type="text" 
+							   id="Side_number" 
+							   name="Side_number" 
+							   placeholder="Please enter your Side_number" />
 					</div>
 				</div>			
 				<div class="userPassword-box">
 					<span class="require">*</span>
 					<label for="userPassword">Password</label>
 					<div class="userPassword-input">
-						<input type="password" id="userPassword" name="userPassword" placeholder="Please enter your password" />
+						<input type="password" 
+							   id="userPassword" 
+							   name="userPassword" 
+							   placeholder="Please enter your password" />
 					</div>
 					<p> <input type="checkbox" id="rememberMe">
 						<span style="vertical-align: middle">remember me</span>
 					</p>
 				</div>
 				
-
 				<div class="submit-box">
 					<input id = "submit-button" type="submit" value="submit">
 				</div>

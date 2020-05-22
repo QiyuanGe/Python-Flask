@@ -3,15 +3,6 @@
 <head>
     <meta charset="UTF-8">
     <title>{% block title %}{% endblock %}</title>
-    {% with messages = get_flashed_messages() %}
-    {% if messages %}
-         <ul class=flashes>
-            {% for message in messages %}
-                <li>{{ message }}</li>
-            {% endfor %}
-        </ul>
-    {% endif %}
-    {% endwith %}
     <style type="text/css">
     body,input{
 		margin: 0;
@@ -36,13 +27,21 @@
 		border: 7px solid #ccc;
     }
     </style>
-    <script src="/static/js/moment.min.js"></script>
     {% block head %}
     {% endblock %}
 </head>
 <body>
     <div class="container">
 		<div class="index-box">
+            {% with messages = get_flashed_messages() %}
+            {% if messages %}
+                 <ul class=flashes>
+                    {% for message in messages %}
+                        <li style="float:mid">{{ message }}</li>
+                    {% endfor %}
+                </ul>
+            {% endif %}
+            {% endwith %}
                 <div class="navbar">
                     <div class="navbar-top">
                         {% if username %}
@@ -50,6 +49,7 @@
                             <li><a>userID：{{ userID }}</a></li>
                             <li style="float:right"><a href="{{ url_for('index') }}">index</a></li>
                             <li style="float:right"><a href="{{ url_for('logout') }}">logout</a></li>
+                            <li style="float:right"><a href="{{ url_for('change') }}" ><button>Change the side number</a>
                         {% else %}
                             <li style="float:right"><a href="{{ url_for('register') }}">register</a></li>
                             <li style="float:right"><a href="{{ url_for('login') }}">login</a></li>

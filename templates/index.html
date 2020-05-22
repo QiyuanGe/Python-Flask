@@ -5,11 +5,13 @@
     {% endblock %}
     {% block main %}
     <div >
-        <span>Task number: {{ Side_num }}</span>
+        <span>Task number: {{ Side_number }}</span>
     </div>
+
     <div >
         <span>Task Name: {{ Task_name }}</span>
     </div>
+
     <div >
         <span>Activity_time: {{ Activity_time }}</span>
     </div>
@@ -17,29 +19,22 @@
     <div >
         <span>Task Status: {{ Activity_type }}</span>
     </div>
+
     <div >
-        <span>Sum time: {{ Sum_time }}</span>
+        <span>Sum time: {{ Sum_hour }} h {{Sum_min}} min {{Sum_second}} s</span>
     </div>
 
-     <div >
-        <form action="/upgradeNewtask" method="POST">
-            <button name="upgradeNewtaskBtn" type = submit>Add a new task</button>
-        </form>
+     <div>
+        <a href="/upgradeNewtask" ><button>Add a new task</button></a>
      </div>
-     <div >
-        <form action="/upgradeSide_num" method="POST">
-            <button name="upgradeSide_numBtn" type = submit>Change the Side number of task</button>
-        </form>
+     <div>
+        <a href="/upgradeSide_num" ><button>Change the side number</a>
      </div>
-     <div >
-        <form action="/upgradeTask_name" method="POST">
-            <button name="upgradeTask_nameBtn" type = submit>Change the task name</button>
-        </form>
+     <div>
+        <a href="/upgradeTask_name" ><button>Change your task name</a>
      </div>
-     <div >
-        <form action="/endTask" method="POST">
-            <button name="endBtn" type = submit>DELETE</button>
-        </form>
+     <div>
+        <a href="/endTask" ><button>end the task</a>
      </div>
 {% endblock %}
 

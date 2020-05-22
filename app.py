@@ -1,18 +1,18 @@
 from flask import Flask, flash, render_template, request, redirect, url_for, session, g
-from flask_socketio import SocketIO,send,emit
-from flask_sqlalchemy import SQLAlchemy
 import sqlite3
 import time
+import random
 from datetime import datetime
 from functools import wraps 
 import config
 from threading import Lock
 
-app = Flask(__name__)   
-async_mode = None  
+app = Flask(__name__) 
 app.config.from_object(config)  
 db = sqlite3.connect('G:/pythonproject/env/user.db', check_same_thread=False)
-
+def days(str1, str2):
+    num = 0
+    return num
 ## login
 @app.route('/', methods = ['GET','POST'])
 def login():
@@ -20,22 +20,17 @@ def login():
         ID = request.form.get('userID')
         name = request.form.get('username')
         password = request.form.get('userPassword')
-        Side_num = request.form.get('Side_num') ## off work
+        Side_number = request.form.get('Side_number') 
         cur = db.cursor()
         cur.execute('select * from UserInformation where User_name =? and Password=? and User_ID=?',[name,password,ID])
         if cur.fetchone() is not None:
-            session['ID'] = ID
-            session['user'] = name
+            session['userID'] = ID
+            session['username'] = name
             session.parameter = True
-            if Side_num == 0:
-                flash ("Please connect to your arduino!")
-                db.commit()
-                return redirect(url_for('login'))
-            else:
-                session['Side_num'] = Side_num
-                session.parameter = True
-                db.commit()
-                return redirect(url_for('index'))
+            session['Side_number'] = Side_number
+            session['Side_change'] = Side_number
+            db.commit()
+            return redirect(url_for('index'))
         else:
             flash('NO such User!')
             return redirect(url_for("login"))
@@ -43,18 +38,18 @@ def login():
 
 @app.context_processor
 def mycontext():
-    usern = session.get('user')
-    userid = session.get('ID')
-    Side_num = session.get('Side_num')
-    if usern and userid:
-        return {'username': usern, "userID": userid,"Side_num":Side_num}
+    usern = session.get('username')
+    userid = session.get('userID')
+    Side_number = session.get('Side_number')
+    if usern and userid and Side_number:
+        return {'username': usern, "userID": userid,"Side_num":Side_number}
     else:
         return {}
 
 def loginFirst(func):
     @wraps(func)
     def wrappers(*args, **kwargs):
-        if not session.get('user'):
+        if not session.get('username'):
             return redirect(url_for('login'))
         return func(*args, **kwargs)    
     return wrappers
@@ -89,38 +84,57 @@ def register():
 @app.route('/index',methods = ['GET','POST'])
 @loginFirst
 def index():
-        Username = session.get('user')
-        ID = session.get('ID')
-        Side_num = session.get('Side_num')
-        Task_name = []
-        time_now = time.strftime("%Y-%m-%d %X", time.localtime())
-        Activity_time = []
-        Activity_type = []
-        Sum_time = []
-        cur = db.cursor()
-        cur.execute('select * from task where Side_number =? and User_ID =?',[Side_num,ID])
-        result3 = cur.fetchone()
-        if result3 == None:
-            flash('Please enter a new task!')
-            return render_template('index.html',Side_num = Side_num,Task_name=Task_name,Activity_time=Activity_time,Actyvity_type=Activity_type,Sum_time=Sum_time)
-        else:
+        Username = session.get('username')
+        ID = session.get('userID')
+        Side_number = session.get('Side_number')
+        if session.get('Side_change') == session.get('Side_number'):
+            print(Side_number)
+            session['time_start'] = time.strftime("%Y-%m-%d %H:%M:%S", time.localtime())
+            cur = db.cursor()
+            cur.execute('select * from task where  User_ID =? and Side_number = ?',[ID,Side_number])
+            result3 = cur.fetchone()
             print(result3)
-            Side_num = result3[2]
-            Task_name= result3[3]
-            Activity_time = result3[4]
-            Activity_type= result3[5]
-            Sum_time = result3[6] +time_now-Activity_time
-            Activity_time = time_now
-            cur.execute('update task set Activity_time=? where User_ID=? and Side_number=?',(Activity_time,ID,Side_num))
-            cur.execute('update task set Sum_time=? where User_ID=? and Side_number=?',(Sum_time,ID,Side_num))
+            if result3 == None:
+                flash('Please enter a new task!')
+                db.commit()
+                return render_template('index.html')
+            else:
+                Side_number = result3[1]
+                Task_name= result3[2]
+                Activity_time = result3[3]
+                Activity_type= result3[4]
+                Sum_time = result3[5]
+                session['Sum_time'] = Sum_time
+                Sum_hour = int(Sum_time/60/60)
+                Sum_min = int(Sum_time/60)-Sum_hour*60
+                Sum_second = Sum_time - Sum_hour*60*60-Sum_min*60
+            print(Side_number,Task_name, Activity_time, Activity_type,Sum_time)
+            return render_template('index.html',Side_number = Side_number,Task_name=Task_name,Activity_time=Activity_time,Actyvity_type=Activity_type,Sum_hour=Sum_time,Sum_min=Sum_min,Sum_second=Sum_second)
+        else:
+            Sum_timeNew = 0
+            session['Side_number'] = Side_number
+            session['time_end'] = time.strftime("%Y-%m-%d %H:%M:%S", time.localtime())
+            print(session.get('time_start'))
+            print(session.get('time_end'))
+            time_start = datetime.strptime(session['time_start'],"%Y-%m-%d %H:%M:%S")
+            time_end =  datetime.strptime(session['time_end'],"%Y-%m-%d %H:%M:%S")
+            working_time = (time_end - time_start).seconds
+            Activity_time = session.get('time.end')
+            Sum_timeNew = working_time + session['Sum_time'] 
+            print(session['Sum_time'])
+            print(Sum_timeNew)
+            c = db.cursor()
+            c.execute('update task set Activity_time=? where User_ID=? and Side_number=?',(Activity_time,ID,Side_number))
+            c.execute('update task set Sum_time=? where User_ID=? and Side_number=?',(Sum_timeNew,ID,Side_number))
             db.commit()
-            print(Side_num,Task_name, Activity_time, Activity_type,Sum_time)
-            return render_template('index.html',Side_num = Side_num,Task_name=Task_name,Activity_time=Activity_time,Actyvity_type=Activity_type,Sum_time=Sum_time)
+            return render_template('index.html')
+            return redirect(url_for('index'))
+        
 
 @app.route('/endTask',methods = ['GET','POST'])
 @loginFirst
 def endTask():
-        ID = session.get('ID')
+        ID = session.get('userID')
         Side_num = session.get('Side_num')
         cur = db.cursor()
         c = ('end',ID,Side_num)
@@ -133,25 +147,31 @@ def endTask():
         db.commit()
         return redirect(url_for('index'))
 
+@app.route('/submit',methods = ['GET','POST'])
+def submit():
+    return redirect(url_for('index'))
+
 @app.route('/upgradeNewtask',methods =['GET','POST'])
 @loginFirst
 def upgradeNewtask():
     if request.method =='POST':
-        Username = session.get('user')
-        ID = session.get('ID')
+        Username = session.get('username')
+        ID = session.get('userID')
         task_name = request.form.get('Task_name')
         Side_number = request.form.get('Side_number')
         cur = db.cursor()
         sql ='select * from task where User_ID=? and Side_number=?'
         cur.execute(sql,(ID,Side_number))
         if cur.fetchone() == None and Side_number != 6:
-            sql = 'insert into task (User_ID,Side_number,Task_name, Activity_time,Activity_type)''values(?,?,?,?,?)'
-            Activity_time = time.strftime("%Y-%m-%d %X", time.localtime())
+            sql = 'insert into task (User_ID,Side_number,Task_name, Activity_time,Activity_type,Sum_time)''values(?,?,?,?,?,?)'
+            Activity_time = time.strftime("%Y-%m-%d %H:%M:%S", time.localtime())
             Activity_type = 'upgrade'
-            data = (ID,Side_number,task_name,Activity_time,Activity_type)
+            Sum_time = 0
+            data = (ID,Side_number,task_name,Activity_time,Activity_type,Sum_time)
             print(data)
             cur.execute(sql,data)
             db.commit()
+            return render_template('upgrade.html')
             return redirect(url_for('index'))
         elif cur.fetchone() != None and Side_number != 6:
             flash("Already have a task! Please change side!")
@@ -166,20 +186,20 @@ def upgradeNewtask():
 @loginFirst
 def upgradeSide_num():
     if request.method =='POST':
-        Username = session.get('user')
-        User_ID = session.get('ID')
+        Username = session.get('username')
+        User_ID = session.get('userID')
         Side_numNow = session.get('Side_num')
         Side_numChange = request.form.get('Side_num')
-        Task_name = []
         cur = db.cursor()
         sql ='select * from task where User_ID=? and Side_number=?'
         cur.execute(sql,(User_ID,Side_numChange))
         if cur.fetchone() == None and Side_numChange != 6:
             sql = 'update task set Side_number=? where User_Id=? and Side_number=?'
             c = (Side_numChange,User_ID,Side_numNow)
-            cur.execute(sql,c)
+            cur1 = db.cursor()
+            cur1.execute(sql,c)
             db.commit()
-            session['Side_num'] = Side_numChange
+            return render_template('upgrade.html')
             return redirect(url_for('index'))
         elif cur.fetchone() != None and Side_numChange != 6:
             flash('This side of tube already got a task! Please change another side!')
@@ -193,18 +213,25 @@ def upgradeSide_num():
 @loginFirst
 def upgradeTask_name():
     if request.method =='POST':
-        Username = session.get('user')
-        User_ID = session.get('ID')
-        Side_num = session.get('Side_num')
+        Username = session.get('username')
+        User_ID = session.get('userID')
+        Side_number = request.form.get('Side_number')
         Task_nameChange = request.form.get('Task_name')
         cur = db.cursor()
         sql ='select * from task where User_ID=? and Side_number=?'
-        cur.execute(sql,(User_ID,Side_num))
+        cur.execute(sql,(User_ID,Side_number))
         if cur.fetchone() == None:
-            sql = 'update task set Task_name=? where User_Id=? and Side_number=?'
-            c = (Task_nameChange,User_ID,Side_num)
-            cur.execute(sql,c)
-            db.commit()
+            if Task_nameChange == None:
+                flash('Please enter new task name!')
+                return render_template('upgrade.html')
+            else:
+                sql = 'update task set Task_name=? where User_Id=? and Side_number=?'
+                c = (Task_nameChange,User_ID,Side_number)
+                cur1 = db.cursor()
+                cur1.execute(sql,c)
+                db.commit()
+                return render_template('upgrade.html')
+                return redirect(url_for('index'))
         elif cur.fetchone() != None :
             flash('This task already exited! Please change another name!')
             return render_template('upgrade.html')
@@ -214,6 +241,11 @@ def upgradeTask_name():
 def logout():
     session.clear()
     return redirect(url_for('login'))  
+
+@app.route('/changeSide_number')
+def change():
+    session['Side_change'] =  random.randint(1,5)  
+    return redirect(url_for('index'))
 
 if __name__ == 'main':
     app.run(debug = True, host='0.0.0.0', port=5000)
