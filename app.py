@@ -169,10 +169,14 @@ def upgradeNewtask():
             Sum_time = 0
             data = (ID,Side_number,task_name,Activity_time,Activity_type,Sum_time)
             print(data)
+            ###   this code doesn't work ...... from here
             cur.execute(sql,data)
             db.commit()
+            #### end here
             return render_template('upgrade.html')
+            ####   this code doesn't work.... from here
             return redirect(url_for('index'))
+            ####   end here
         elif cur.fetchone() != None and Side_number != 6:
             flash("Already have a task! Please change side!")
             return render_template('upgrade.html')
@@ -197,6 +201,7 @@ def upgradeSide_num():
             sql = 'update task set Side_number=? where User_Id=? and Side_number=?'
             c = (Side_numChange,User_ID,Side_numNow)
             cur1 = db.cursor()
+            #### this code doesn't work..... 
             cur1.execute(sql,c)
             db.commit()
             return render_template('upgrade.html')
@@ -228,9 +233,11 @@ def upgradeTask_name():
                 sql = 'update task set Task_name=? where User_Id=? and Side_number=?'
                 c = (Task_nameChange,User_ID,Side_number)
                 cur1 = db.cursor()
+                #### this code doesn't work
                 cur1.execute(sql,c)
                 db.commit()
                 return render_template('upgrade.html')
+                #### and this also.....
                 return redirect(url_for('index'))
         elif cur.fetchone() != None :
             flash('This task already exited! Please change another name!')
