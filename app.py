@@ -139,30 +139,28 @@ def upgradeNewtask():
     if request.method =='POST':
         Username = session.get('user')
         ID = session.get('ID')
-        Side_num = session.get('Side_num')
+        task_name = request.form.get('Task_name')
+        Side_number = request.form.get('Side_number')
         cur = db.cursor()
         sql ='select * from task where User_ID=? and Side_number=?'
-        cur.execute(sql,(ID,Side_num))
-        if cur.fetchone() == None and Side_num != 6:
+        cur.execute(sql,(ID,Side_number))
+        if cur.fetchone() == None and Side_number != 6:
             sql = 'insert into task (User_ID,Side_number,Task_name, Activity_time,Activity_type)''values(?,?,?,?,?)'
-            task_name = request.form.get('Task_name')
-            Side_name = request.form.get('Side_name')
             Activity_time = time.strftime("%Y-%m-%d %X", time.localtime())
             Activity_type = 'upgrade'
-            data = (ID,Side_num,task_name,Activity_time,Activity_type)
+            data = (ID,Side_number,task_name,Activity_time,Activity_type)
             print(data)
             cur.execute(sql,data)
             db.commit()
-            flash ('Successfully upgrade new task!')
-            return render_template('upgrade.html')
-        elif cur.fetchone() != None and Side_num != 6:
+            return redirect(url_for('index'))
+        elif cur.fetchone() != None and Side_number != 6:
             flash("Already have a task! Please change side!")
             return render_template('upgrade.html')
-        elif Side_num == 6:
+        elif Side_number == 6:
             flash('Miontor is off work!')
             return render_template('upgrade.html')
-    return redirect(url_for('index'))
     return render_template('upgrade.html')
+
 
 @app.route('/upgradeSide_num',methods =['GET','POST'])
 @loginFirst
