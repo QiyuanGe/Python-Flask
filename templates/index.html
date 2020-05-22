@@ -1,0 +1,46 @@
+{% extends "base.html" %}
+
+    {%block head%}
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
+    {% endblock %}
+    {% block main %}
+    <div >
+        <span>Task number: {{ Side_num }}</span>
+    </div>
+    <div >
+        <span>Task Name: {{ Task_name }}</span>
+    </div>
+    <div >
+        <span>Activity_time: {{ Activity_time }}</span>
+    </div>
+
+    <div >
+        <span>Task Status: {{ Activity_type }}</span>
+    </div>
+    <div >
+        <span>Sum time: {{ Sum_time }}</span>
+    </div>
+
+     <div >
+        <form action="/upgradeNewtask" method="POST">
+            <button name="upgradeNewtaskBtn" type = submit>Add a new task</button>
+        </form>
+     </div>
+     <div >
+        <form action="/upgradeSide_num" method="POST">
+            <button name="upgradeSide_numBtn" type = submit>Change the Side number of task</button>
+        </form>
+     </div>
+     <div >
+        <form action="/upgradeTask_name" method="POST">
+            <button name="upgradeTask_nameBtn" type = submit>Change the task name</button>
+        </form>
+     </div>
+     <div >
+        <form action="/endTask" method="POST">
+            <button name="endBtn" type = submit>DELETE</button>
+        </form>
+     </div>
+{% endblock %}
+
+

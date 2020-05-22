@@ -1,0 +1,280 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>User register</title>
+	<style type="text/css">
+	body,input{
+		margin: 0;
+		padding: 0;
+		background: #fff;
+	}
+	input{
+		display: inline-block;
+		background: #fff;
+	}
+	.container{
+		width: 100%;
+	}
+	.login-box{
+		position: relative;
+		height: 800px;
+		width: 800px;
+		top: 50px;
+		margin: 0 auto;
+		z-index: 99999;
+		background:#fff;
+		border: 7px solid #ccc;
+	}
+	.title-box{
+		position: absolute;
+		width: 300px;
+		height: 50px;
+		margin-left: 250px;
+		margin-top: 5px;
+		text-align: center;
+		font-size: 28px;
+		font-weight: 800;
+		color: #ff5000;
+		line-height: 50px;
+	}
+	.userID-box{
+		position: absolute;
+		width: 800px;
+		height: 40px;
+		line-height: 40px;
+		margin-top:100px;
+		margin-left:80px;
+		font-weight: 700;
+	}
+	.userID-input{
+		display: inline-block;
+		margin-left: 70px;
+	}
+	#userID{
+		height: 35px;
+		width: 290px;
+		border: 2px solid #ccc;
+		border-radius: 5px;
+	}
+	.username-box{
+		position: absolute;
+		width: 800px;
+		height: 40px;
+		line-height: 40px;
+		margin-top:180px;
+		margin-left:80px;
+		font-weight: 700;
+	}
+	.username-input{
+		display: inline-block;
+		margin-left: 45px;
+	}
+	.Side_num-box{
+		position: absolute;
+		width: 800px;
+		height: 40px;
+		line-height: 40px;
+		margin-top:260px;
+		margin-left:80px;
+		font-weight: 700;
+	}
+	.Side_num-input{
+		display: inline-block;
+		margin-left: 45px;
+	}
+	#username{
+		height: 35px;
+		width: 290px;
+		border: 2px solid #ccc;
+		border-radius: 5px;
+	}
+	.userPassword-box{
+		position: absolute;
+		width: 800px;
+		height: 40px;
+		line-height: 40px;
+		margin-top:320px;
+		margin-left:80px;
+		font-weight: 700;
+	}
+	.userPassword-input{
+		display: inline-block;
+		margin-left: 55px;
+	}
+	#userPassword{
+		height: 35px;
+		width: 290px;
+		border: 2px solid #ccc;
+		border-radius: 5px;
+	}
+	#rememberme-checkbox{
+		position: absolute;
+		width: 800px;
+		height: 40px;
+		line-height: 40px;
+		margin-top:360px;
+		margin-left:80px;
+		font-weight: 700;
+
+	}
+	.require{
+		color: red;
+	}
+	.submit-box{
+		position:absolute;
+		width: 80px;
+		height: 40px;
+		line-height: 40px;
+		margin-top:420px;
+		margin-left:200px;
+		border-radius: 5px;
+		background: grey;
+	}
+	#submit-button{
+		display: inline-block;
+		width: 80px;
+		height: 40px;
+		border-radius: 5px;
+		background: green;
+	}
+	.goRegister-box{
+		position:absolute;
+		width: 200px;
+		height: 80px;
+		margin-top: 450px;
+		margin-left:200px;
+	}
+	</style>
+</head>
+
+<body>
+	<div class="container">
+		<div class="login-box">
+			<div class="title-box">
+				<span>User login</span>
+			</div>
+			{% with messages = get_flashed_messages() %}
+				{% if messages %}
+			  		<ul class=flashes>
+			  			{% for message in messages %}
+							<li>{{ message }}</li>
+				 		{% endfor %}
+			  		</ul>
+				{% endif %}
+	 		{% endwith %}
+			<form action="#" method="post">
+				
+				<div class="userID-box">
+					<span class="require">*</span>
+					<label for="userID">User ID</label>
+					<div class="userID-input">
+						<input type="text" id="userID" name="userID" placeholder="Please enter your user ID(get from Arduino)" />
+					</div>
+				</div>
+
+				<div class="username-box">
+					<span class="require">*</span>
+					<label for="username">User name</label>
+					<div class="username-input">
+						<input type="text" id="username" name="username" placeholder="Please enter your user name" />
+					</div>
+				</div>
+				<div class="Side_num-box">
+					<span class="require">*</span>
+					<label for="Side_num">Side number</label>
+					<div class="Side_num-input">
+						<input type="text" id="Side_num" name="Side_num" placeholder="Please enter your user name" />
+					</div>
+				</div>			
+				<div class="userPassword-box">
+					<span class="require">*</span>
+					<label for="userPassword">Password</label>
+					<div class="userPassword-input">
+						<input type="password" id="userPassword" name="userPassword" placeholder="Please enter your password" />
+					</div>
+					<p> <input type="checkbox" id="rememberMe">
+						<span style="vertical-align: middle">remember me</span>
+					</p>
+				</div>
+				
+
+				<div class="submit-box">
+					<input id = "submit-button" type="submit" value="submit">
+				</div>
+				
+				<div class="goRegister-box">
+					<a href="{{ url_for('register')}}" style="text-decoration: none;">Don't have an account? go to register one</a>
+				</div>
+			</form>
+		</div>
+	</div>
+	<script src="https://code.jquery.com/jquery-3.1.1.min.js"></script>
+</body>
+<script>
+    $(function () {
+ 
+        initView();
+ 
+        $("#submit-button").click(function () {
+            if ($("#rememberMe").is(":checked")) {
+				setCookie("cookie_userID", $("#userID").val());
+				setCookie("cookie_username", $("#username").val());
+                setCookie("cookie_password", $("#password").val());
+                setCookie("rememberMe", true);
+            } else {
+				delCookie("cookie_userID");
+				delCookie("cookie_username");
+                delCookie("cookie_password");
+                delCookie("rememberMe");
+            }
+            window.location.reload()
+        });
+    });
+ 
+    function initView() {
+		if (getCookie("cookie_userID")) {
+            $("#userID").val(getCookie("cookie_userID"));
+        }
+        if (getCookie("cookie_username")) {
+            $("#username").val(getCookie("cookie_username"));
+        }
+        if (getCookie("cookie_password")) {
+            $("#password").val(getCookie("cookie_password"));
+        }
+        if (getCookie("rememberMe")) {
+            $("#rememberMe").attr("checked", getCookie("rememberMe"));
+		}
+		$("#userID").focus(function () {
+            this.select();
+        });
+        $("#username").focus(function () {
+            this.select();
+        });
+        $("#password").focus(function () {
+            this.select();
+        });
+    }
+ 
+    function setCookie(name, value) {
+        var Days = 30; 
+        var exp = new Date();
+        exp.setTime(exp.getTime() + Days * 24 * 60 * 60 * 1000);
+        document.cookie = name + "=" + escape(value) + ";expires=" + exp.toGMTString();
+    }
+
+    function delCookie(name) {
+        var exp = new Date();
+        exp.setTime(exp.getTime() - 1);
+        var cval = getCookie(name);
+        if (cval != null) document.cookie = name + "=" + cval + ";expires=" + exp.toGMTString();
+    }
+
+    function getCookie(name) {
+        var arr = document.cookie.match(new RegExp("(^| )" + name + "=([^;]*)(;|$)"));
+        if (arr != null)
+            return unescape(arr[2]);
+        return null;
+    }
+</script>
+</html>

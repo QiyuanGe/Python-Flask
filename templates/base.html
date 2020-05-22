@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>{% block title %}{% endblock %}</title>
+    {% with messages = get_flashed_messages() %}
+    {% if messages %}
+         <ul class=flashes>
+            {% for message in messages %}
+                <li>{{ message }}</li>
+            {% endfor %}
+        </ul>
+    {% endif %}
+    {% endwith %}
+    <style type="text/css">
+    body,input{
+		margin: 0;
+		padding: 0;
+		background: #fff;
+	}
+	input{
+		display: inline-block;
+		background: #fff;
+	}
+	.container{
+		width: 100%;
+	}
+	.index-box{
+		position: relative;
+		height: 600px;
+		width: 800px;
+		top: 25px;
+		margin: 0 auto;
+		z-index: 99999;
+		background:#fff;
+		border: 7px solid #ccc;
+    }
+    </style>
+    <script src="/static/js/moment.min.js"></script>
+    {% block head %}
+    {% endblock %}
+</head>
+<body>
+    <div class="container">
+		<div class="index-box">
+                <div class="navbar">
+                    <div class="navbar-top">
+                        {% if username %}
+                            <li><a>username：{{ username }}</a></li>
+                            <li><a>userID：{{ userID }}</a></li>
+                            <li style="float:right"><a href="{{ url_for('index') }}">index</a></li>
+                            <li style="float:right"><a href="{{ url_for('logout') }}">logout</a></li>
+                        {% else %}
+                            <li style="float:right"><a href="{{ url_for('register') }}">register</a></li>
+                            <li style="float:right"><a href="{{ url_for('login') }}">login</a></li>
+                        {% endif %}
+                    </nav>
+                </div>
+            {% block main %}
+            {% endblock %}
+        </div>
+    </div>
+
+</body>
+</html>

@@ -1,0 +1,28 @@
+{% extends "base.html" %}
+    {%block head%}
+    {% endblock %}
+
+    {% block main %}
+        <form action="{{ url_for('upgradeNewtask') }}" method="post">
+           <div class="question-control">
+               <div class="form-group">
+                    <div>
+                        <label for="Task_name">Task name</label>
+                        <br>
+                        <textarea class="form-control" id="title" placeholder="Please enter your task title" name="title"type="text" required style="resize:none;width:150px;height:50px;"overflow-y:visible;></textarea>
+                        <span class="validity"></span>
+                    </div>
+                    <div>
+                        <label for="Side_num">Side number</label>
+                        <br>
+                        <textarea class="form-control" id="title" placeholder="Please enter your task title" name="title"type="text" required style="resize:none;width:150px;height:50px;"overflow-y:visible;></textarea>
+                        <span class="validity"></span>
+                    </div>
+                </div>
+            <div class="submit-button">
+               <br>
+               <button type="submit" class="btn btn-default" style="float:right" id="submit-button">Submit</button>
+            </div>
+            </form>
+        </div>
+    {% endblock %}
