@@ -105,11 +105,11 @@ def index():
             return render_template('index.html',Side_num = Side_num,Task_name=Task_name,Activity_time=Activity_time,Actyvity_type=Activity_type,Sum_time=Sum_time)
         else:
             print(result3)
-            Side_num.append(result3[2])
-            Task_name.append(result3[3])
-            Activity_time.append(result3[4])
-            Activity_type.append(result3[5])
-            Sum_time = Sum_time.append(result3[6])+time_now-Activity_time
+            Side_num = result3[2]
+            Task_name= result3[3]
+            Activity_time = result3[4]
+            Activity_type= result3[5]
+            Sum_time = result3[6] +time_now-Activity_time
             Activity_time = time_now
             cur.execute('update task set Activity_time=? where User_ID=? and Side_number=?',(Activity_time,ID,Side_num))
             cur.execute('update task set Sum_time=? where User_ID=? and Side_number=?',(Sum_time,ID,Side_num))
@@ -142,7 +142,8 @@ def upgradeNewtask():
         Side_num = session.get('Side_num')
         cur = db.cursor()
         sql ='select * from task where User_ID=? and Side_number=?'
-        if cur.execute(sql,(ID,Side_num)) == None and Side_num != 6:
+        cur.execute(sql,(ID,Side_num))
+        if cur.fetchone() == None and Side_num != 6:
             sql = 'insert into task (User_ID,Side_number,Task_name, Activity_time,Activity_type)''values(?,?,?,?,?)'
             task_name = request.form.get('Task_name')
             Side_name = request.form.get('Side_name')
@@ -152,8 +153,8 @@ def upgradeNewtask():
             cur.execute(sql,data)
             db.commit()
             flash ('Successfully upgrade new task!')
-            return redirect(url_for('index'))
-        elif cur.execute(sql,(ID,Side_num)) != None and Side_num != 6:
+            return render_template('uprade.html')
+        elif cur.fetchone() != None and Side_num != 6:
             flash("Already have a task! Please change side!")
             return render_template('upgrade.html')
         elif Side_num == 6:
@@ -172,14 +173,15 @@ def upgradeSide_num():
         Task_name = []
         cur = db.cursor()
         sql ='select * from task where User_ID=? and Side_number=?'
-        if cur.execute(sql,(User_ID,Side_numChange)) == None and Side_numChange != 6:
+        cur.execute(sql,(User_ID,Side_numChange))
+        if cur.fetchone() == None and Side_numChange != 6:
             sql = 'update task set Side_number=? where User_Id=? and Side_number=?'
             c = (Side_numChange,User_ID,Side_numNow)
             cur.execute(sql,c)
             db.commit()
             session['Side_num'] = Side_numChange
             return redirect(url_for('index'))
-        elif cur.execute(sql,(User_ID,Side_numChange)) != None and Side_numChange != 6:
+        elif cur.fetchone() != None and Side_numChange != 6:
             flash('This side of tube already got a task! Please change another side!')
             return render_template('upgrade.html')
         elif Side_numChange == 6:
@@ -197,12 +199,13 @@ def upgradeTask_name():
         Task_nameChange = request.form.get('Task_name')
         cur = db.cursor()
         sql ='select * from task where User_ID=? and Side_number=?'
-        if cur.execute(sql,(User_ID,Side_num)) == None:
+        cur.execute(sql,(User_ID,Side_num))
+        if cur.fetchone() == None:
             sql = 'update task set Task_name=? where User_Id=? and Side_number=?'
             c = (Task_nameChange,User_ID,Side_num)
             cur.execute(sql,c)
             db.commit()
-        elif cur.execute(sql,(User_ID,Side_num)) != None :
+        elif cur.fetchone() != None :
             flash('This task already exited! Please change another name!')
             return render_template('upgrade.html')
     return render_template('upgrade.html')
