@@ -150,16 +150,18 @@ def upgradeNewtask():
             Activity_time = time.strftime("%Y-%m-%d %X", time.localtime())
             Activity_type = 'upgrade'
             data = (ID,Side_num,task_name,Activity_time,Activity_type)
+            print(data)
             cur.execute(sql,data)
             db.commit()
             flash ('Successfully upgrade new task!')
-            return render_template('uprade.html')
+            return render_template('upgrade.html')
         elif cur.fetchone() != None and Side_num != 6:
             flash("Already have a task! Please change side!")
             return render_template('upgrade.html')
         elif Side_num == 6:
             flash('Miontor is off work!')
             return render_template('upgrade.html')
+    return redirect(url_for('index'))
     return render_template('upgrade.html')
 
 @app.route('/upgradeSide_num',methods =['GET','POST'])
