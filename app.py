@@ -10,9 +10,7 @@ from threading import Lock
 app = Flask(__name__) 
 app.config.from_object(config)  
 db = sqlite3.connect('G:/pythonproject/env/user.db', check_same_thread=False)
-def days(str1, str2):
-    num = 0
-    return num
+
 ## login
 @app.route('/', methods = ['GET','POST'])
 def login():
