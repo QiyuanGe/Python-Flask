@@ -99,20 +99,19 @@ def index():
                 db.commit()
                 return render_template('index.html')
             else:
-                Side_number = result3[1]
                 Task_name= result3[2]
                 Activity_time = result3[3]
                 Activity_type= result3[4]
                 Sum_time = result3[5]
                 session['Sum_time'] = Sum_time
-                Sum_hour = int(Sum_time/60/60)
-                Sum_min = int(Sum_time/60)-Sum_hour*60
-                Sum_second = Sum_time - Sum_hour*60*60-Sum_min*60
+                Sum_hour = int(Sum_time/60/60)  ##hours
+                Sum_min = int(Sum_time/60)-Sum_hour*60   ## minutes
+                Sum_second = Sum_time - Sum_hour*60*60-Sum_min*60  ##seconds
             print(Side_number,Task_name, Activity_time, Activity_type,Sum_time)
             return render_template('index.html',Side_number = Side_number,Task_name=Task_name,Activity_time=Activity_time,Actyvity_type=Activity_type,Sum_hour=Sum_time,Sum_min=Sum_min,Sum_second=Sum_second)
         else:
-            Sum_timeNew = 0
-            session['Side_number'] = Side_number
+            Sum_timeNew = 0   ### start calculate the last task's sum time
+            session['Side_number'] = session.get('Side_numberChange')
             session['time_end'] = time.strftime("%Y-%m-%d %H:%M:%S", time.localtime())
             print(session.get('time_start'))
             print(session.get('time_end'))
