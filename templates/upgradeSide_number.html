@@ -1,37 +1,93 @@
 {% extends "base.html" %}
     {%block head%}
     <style>   
+        .taskname-box{
+            position: absolute;
+            width: 800px;
+            height: 40px;
+            line-height: 40px;
+            margin-top:100px;
+            margin-left:80px;
+            font-weight: 700;
+        }
+        .taskname-input{
+            display: inline-block;
+            margin-left: 60px;
+        }
+        #taskname{
+            height: 35px;
+            width: 290px;
+            border: 2px solid #ccc;
+            border-radius: 5px;
+        }
+        .Side_number-box{
+            position: absolute;
+            width: 800px;
+            height: 40px;
+            line-height: 40px;
+            margin-top:180px;
+            margin-left:80px;
+            font-weight: 700;
+        }
+        .Side_number-input{
+            display: inline-block;
+            margin-left: 60px;
+        }
+        #Side_number{
+            height: 35px;
+            width: 290px;
+            border: 2px solid #ccc;
+            border-radius: 5px;
+        }
         .require{ color: red;} 
+        .submit-box{
+            position:absolute;
+            width: 80px;
+            height: 40px;
+            line-height: 40px;
+            margin-top:240px;
+            margin-left:200px;
+            border-radius: 5px;
+            background: rgb(0, 238, 255);
+        }
+        #submit-button{
+            display: inline-block;
+            width: 80px;
+            height: 40px;
+            border-radius: 5px;
+            background: rgb(0, 238, 255);
+        }
     </style>
- 
     {% endblock %}
 
     {% block main %}
         <form action="/upgradeSide_num" method= "POST">
-                    <div>
-                        <span class="require">*</span>
-                        <label for="Task_name">The Task name </label>
-                        <input  type = "text"
-                                id="Task_name" 
-                                placeholder="Please enter your task name" 
-                                name="Task_name"
-                                required style="resize:none;width:300px;height:50px;"
-                                overflow-y:visible;><br><br>
-                        <span class="validity"></span>
-                    </div>
-                    <div>
-                        <span class="require">*</span>
-                        <label for="Side_number">Side number  </label>
-                        <input  type = "text "
-                                id="Side_number" 
-                                placeholder="Please choose your Side number" 
-                                name="Side_number" 
-                                required style="resize:none;width:300px;height:50px;"
-                                overflow-y:visible;><br><br>
-                        <span class="validity"></span>
-                    </div>
-                <div class="submit-button">
-                    <button type="submit" style="float:right" id="submit-button" value="submit">Submit</button>
+            <div>
+                <div class="taskname-box"> 
+                <span class="require">*</span>
+                <label for="Task_name">The task name of the side</label>
+                <input  type = "text"
+                        id="Task_name" 
+                        placeholder="Please enter your task name" 
+                        name="Task_name"
+                        required style="resize:none;width:300px;height:50px;"
+                        overflow-y:visible;><br><br>
                 </div>
+            </div>
+            <div>
+                <div class="Side_number-box"> 
+                <span class="require">*</span>
+                <label for="Side_number">The side you want to use</label>
+                <input  type = "text "
+                        id="Side_number" 
+                        placeholder="Please choose your Side number" 
+                        name="Side_number" 
+                        required style="resize:none;width:300px;height:50px;"
+                        overflow-y:visible;><br><br>
+                </div>
+            </div>
+            <div class="submit-box">
+                <button type="submit" style="float:right" id="submit-button" value="submit">Submit</button>
+            </div>
         </form>
     {% endblock %}

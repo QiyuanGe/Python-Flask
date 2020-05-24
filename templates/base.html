@@ -7,7 +7,7 @@
     body,input{
 		margin: 0;
 		padding: 0;
-		background: #fff;
+		background: rgb(255, 255, 255);
 	}
 	input{
 		display: inline-block;
@@ -26,6 +26,8 @@
 		background:#fff;
 		border: 7px solid #ccc;
     }
+    
+    .require{ color: red;} 
     </style>
     {% block head %}
     {% endblock %}
@@ -49,7 +51,6 @@
                             <li><a>userID：{{ userID }}</a></li>
                             <li style="float:right"><a href="{{ url_for('index') }}">index</a></li>
                             <li style="float:right"><a href="{{ url_for('logout') }}">logout</a></li>
-                            <li style="float:right"><a href="{{ url_for('change') }}" ><button>Change the side number</button></a>
                         {% else %}
                             <li style="float:right"><a href="{{ url_for('register') }}">register</a></li>
                             <li style="float:right"><a href="{{ url_for('login') }}">login</a></li>
