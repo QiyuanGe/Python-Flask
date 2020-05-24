@@ -49,7 +49,7 @@
                             <li><a>userID：{{ userID }}</a></li>
                             <li style="float:right"><a href="{{ url_for('index') }}">index</a></li>
                             <li style="float:right"><a href="{{ url_for('logout') }}">logout</a></li>
-                            <li style="float:right"><a href="{{ url_for('change') }}" ><button>Change the side number</a>
+                            <li style="float:right"><a href="{{ url_for('change') }}" ><button>Change the side number</button></a>
                         {% else %}
                             <li style="float:right"><a href="{{ url_for('register') }}">register</a></li>
                             <li style="float:right"><a href="{{ url_for('login') }}">login</a></li>
@@ -60,6 +60,5 @@
             {% endblock %}
         </div>
     </div>
-
 </body>
 </html>
