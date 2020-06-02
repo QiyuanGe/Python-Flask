@@ -7,7 +7,11 @@
 	body,input{
 		margin: 0;
 		padding: 0;
-		background: #fff;
+	}
+	.login_bg{
+	   background:url(static/images/background.jpg) no-repeat center;
+       background-size: 100% 100%;
+       background-attachment: fixed;
 	}
 	input{
 		display: inline-block;
@@ -18,9 +22,10 @@
 	}
 	.login-box{
 		position: relative;
-		height: 800px;
-		width: 800px;
-		top: 50px;
+		height: 400px;
+		width: 75%;
+        opacity:0.8;
+		top: 20px;
 		margin: 0 auto;
 		z-index: 99999;
 		background:#fff;
@@ -28,7 +33,7 @@
 	}
 	.title-box{
 		position: absolute;
-		width: 300px;
+		width: 30%;
 		height: 50px;
 		margin-left: 250px;
 		margin-top: 5px;
@@ -40,102 +45,102 @@
 	}
 	.userID-box{
 		position: absolute;
-		width: 800px;
+		width: 60%;
 		height: 40px;
 		line-height: 40px;
 		margin-top:100px;
-		margin-left:80px;
+		margin-left:10%;
 		font-weight: 700;
 	}
 	.userID-input{
 		display: inline-block;
-		margin-left: 70px;
+		margin-left: 15%;
 	}
 	#userID{
 		height: 35px;
-		width: 290px;
+		width: 160%;
 		border: 2px solid #ccc;
 		border-radius: 5px;
 	}
 	.username-box{
 		position: absolute;
-		width: 800px;
-		height: 40px;
+		width: 60%;
+	    height: 40px;
 		line-height: 40px;
 		margin-top:180px;
-		margin-left:80px;
+		margin-left:10%;
 		font-weight: 700;
 	}
 	.username-input{
 		display: inline-block;
-		margin-left: 45px;
+		margin-left: 12%;
 	}
 	#username{
 		height: 35px;
-		width: 290px;
+		width: 130%;
 		border: 2px solid #ccc;
 		border-radius: 5px;
 	}
 	.userPassword-box{
 		position: absolute;
-		width: 800px;
-		height: 40px;
+		width: 60%;
+	    height: 40px;
 		line-height: 40px;
-		margin-top:240px;
-		margin-left:80px;
+		margin-top:260px;
+		margin-left:10%;
 		font-weight: 700;
 	}
 	.userPassword-input{
 		display: inline-block;
-		margin-left: 55px;
+	    margin-left: 16%;
 	}
 	#userPassword{
 		height: 35px;
-		width: 290px;
+		width: 130%;
 		border: 2px solid #ccc;
 		border-radius: 5px;
 	}
 	#rememberme-checkbox{
 		position: absolute;
-		width: 800px;
-		height: 40px;
+		width: 60%;
+	    height: 40px;
 		line-height: 40px;
 		margin-top:320px;
-		margin-left:80px;
+		margin-left:10%;
 		font-weight: 700;
-
 	}
 	.require{
 		color: red;
 	}
 	.submit-box{
 		position:absolute;
-		width: 80px;
-		height: 40px;
+		width: 20%;
+		height: 70px;
 		line-height: 40px;
-		margin-top:400px;
-		margin-left:200px;
+		margin-top:170px;
+		margin-left:70%;
 		border-radius: 5px;
 		background: grey;
 	}
 	#submit-button{
 		display: inline-block;
-		width: 80px;
-		height: 40px;
+		width: 100%;
+		height: 70px;
+		color:#fff;
 		border-radius: 5px;
-		background: green;
+		background: #04F;
 	}
 	.goRegister-box{
 		position:absolute;
 		width: 200px;
 		height: 80px;
-		margin-top: 480px;
-		margin-left:200px;
+		margin-top:320px;
+		margin-left:30%;
 	}
 	</style>
 </head>
 
-<body>
+<body class="login_bg">
 	<div class="container">
 		<div class="login-box">
 			<div class="title-box">
@@ -181,7 +186,7 @@
 				</div>
 				
 				<div class="submit-box">
-					<input id = "submit-button" type="submit" value="submit">
+					<input id = "submit-button" type="submit" value="submit"style="">
 				</div>
 				
 				<div class="goRegister-box">

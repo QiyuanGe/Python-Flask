@@ -1,11 +1,14 @@
-from flask import Flask, flash, render_template, request, redirect, url_for, session, g
-import sqlite3
-import time
-import random
+from flask import Flask, flash, render_template, request, redirect, url_for, session, jsonify
+from threading import Lock
 from datetime import datetime
 from functools import wraps 
 import config
-from threading import Lock
+import sqlite3
+import time
+import random
+import json
+
+
 
 app = Flask(__name__) 
 app.config.from_object(config)  
@@ -17,10 +20,32 @@ def login_required():
     if request.path in ['/login','/register','/Connection_check']: 
         return None
     user=session.get('userID')  
-    if not user:     
-        flash('PLease login to your account!')            
-        return redirect('/login')
+    if not user:              
+        return redirect(url_for("login"))
     return None
+
+##check if the ARduino connect
+@app.route('/Connection_check',methods = ['GET','POST'])
+def Connection_check():
+ if request.method == "POST":
+    data = request.get_data()
+    Arduino_data = json.loads(data)
+    userID = Arduino_data.get("Arduino_ID")
+    Side_number = Arduino_data.get("Side_number")
+    print(Arduino_data,Side_number)
+    cur = db.cursor()
+    cur.execute('select * from UserInformation where User_ID =?',[userID])
+    result=cur.fetchone()
+    if result == None:
+        return('Please register your User information!')
+    else:
+        c = (Side_number,userID)
+        sql = 'update Userinformation set Side_number_now = ? where User_ID = ?'
+        cur.execute(sql,c)
+        db.commit()
+        session['time_start'] = time.strftime("%Y-%m-%d %H:%M:%S", time.localtime())
+        print(session.get('time_start'))
+        return ('Successfully change the side of tube!')
 
 ## login
 @app.route('/login', methods = ['GET','POST'])
@@ -33,17 +58,17 @@ def login():
         cur.execute('select * from UserInformation where User_name =? and Password=? and User_ID=?',[name,password,ID])
         print(ID,name,password)
         result = cur.fetchone()
+        db.commit()
         print(result)
         if result is not None:
             session['userID'] = ID
             session['username'] = name
             session.parameter = True
             session['Side_number']= result[3]
-            session['time_start'] = time.strftime("%Y-%m-%d %H:%M:%S", time.localtime())
             return redirect(url_for("index"))
         else:
             flash('NO such User!')
-            return redirect(url_for("login"))
+            return redirect(url_for('login'))
     return render_template('login.html')
 
 @app.context_processor
@@ -60,6 +85,8 @@ def mycontext():
 ##insert data to database
 @app.route('/register',methods=['GET','POST'])
 def register():
+    if request.method == 'GET':
+        return render_template('register.html')
     if request.method =='POST':
         userID = request.form.get('userID')
         username = request.form.get('username')
@@ -83,79 +110,106 @@ def register():
             return render_template('register.html')
     return render_template('register.html')
 
-##check if the ARduino connect
-@app.route('/Connection_check',methods = ['GET','POST'])
-def Connection_check():
-    userID = request.form.get('Arduino_ID')
-    Side_number = request.form.get('Side_number')
-    cur = db.cursor()
-    cur.execute('select * from UserInformation where User_ID =?',[userID])
-    result=cur.fetchone()
-    if result == None:
-        return('Please register your User information!')
-    else:
-        c = (Side_number,userID)
-        sql = 'update Userinformation set Side_number_now = ? where User_ID = ?'
-        cur.execute(sql,c)
-        db.commit()
-        return ('Successfully change the side of tube!')
 
 ## main page of website
-@app.route('/',methods = ['GET','POST'])
+@app.route('/index',methods = ['GET','POST'])
 def index():
+    if request.method == "GET":
         Username = session.get('username')
         ID = session.get('userID')
+        if session.get('time_start') == None:
+            session['time_start'] = time.strftime("%Y-%m-%d %H:%M:%S", time.localtime())
+        ## get the side number
         cur1 = db.cursor()
         cur1.execute('select * from Userinformation where User_ID =?',[ID])
         result1 = cur1.fetchone()
         session['Side_number_now'] = result1[3]
-        session['Sum_time'] = 0
-        print(session.get('Side_number_now'),session.get('Side+number'))
+        db.commit()
+
+        print(session.get('Side_number'),session.get('Side_number_now'))
+
+        ## check the side_number_now
         if session.get('Side_number_now')==6:
             flash('Please connect to your monitor and refresh the page!')
             return render_template('index.html',Side_number = 'Off working now!',Task_name='',Activity_time='',Actyvity_type='',Sum_hour=0,Sum_min=0,Sum_second=0)
         else:
-            if session.get('Side_number') ==session.get('Side_number_now'):
+            ## check if the tube change the side 
+            if session.get('Side_number') ==session.get('Side_number_now'):   ## if not
                 print(session.get('Side_number'))
-                session['time_start'] = time.strftime("%Y-%m-%d %H:%M:%S", time.localtime())
-                cur2 = db.cursor()
-                cur2.execute('select * from task where  User_ID =? and Side_number = ?',[ID,session.get('Side_number')])
-                result2 = cur2.fetchone()
-                print(result2)
-                if result2 == None:
+                cur3 = db.cursor()
+                cur3.execute('select * from task where  User_ID =? and Side_number = ?',[ID,session.get('Side_number')])
+                result3 = cur3.fetchone()
+                print(result3)
+                ## check the task information 
+                if result3 == None:
                     flash('Please enter a new task!')
                     db.commit()
                     return render_template('index.html',Side_number = session.get('Side_number'),Task_name='',Activity_time='',Actyvity_type='',Sum_hour=0,Sum_min=0,Sum_second=0)
                 else:
-                    Task_name= result2[2]
-                    Activity_time = result2[3]
-                    Activity_type= result2[4]
-                    session['Sum_time'] = result2[5]
+                    db.commit()
+                    Task_name= result3[2]
+                    Activity_time = result3[3]
+                    Activity_type= result3[4]
+                    session['Sum_time'] = result3[5]
+                    print(session.get('Sum_time'))
+                    Sum_hour = int(session.get('Sum_time')/60/60)  ##hours
+                    Sum_min = int(session.get('Sum_time')/60)-Sum_hour*60   ## minutes
+                    Sum_second = session.get('Sum_time') - Sum_hour*60*60-Sum_min*60  ##seconds
+                    print(session.get('Side_number'),Task_name, Activity_time, Activity_type,session.get('Sum_time'))
+                    return render_template('index.html',
+                    Side_number = session.get('Side_number'),Task_name=Task_name,Activity_time=Activity_time,Actyvity_type=Activity_type,Sum_hour=Sum_hour,Sum_min=Sum_min,Sum_second=Sum_second)
+            
+            else:  ##if the tube change the side
+                cur5 = db.cursor()
+                cur5.execute('select * from task where  User_ID =? and Side_number = ?',[ID,session.get('Side_number')])
+                result5 = cur5.fetchone()
+                print(result5)
+                if result5 != None:
+                    session['Sum_time'] = result5[5]
+                    db.commit()
+                else:
+                    session['Sum_time'] = 0
+                    session['time_start'] = time.strftime("%Y-%m-%d %H:%M:%S", time.localtime())
+
+                Sum_timeNew = 0   ### start calculate the last task's sum time
+                session['time_end'] = time.strftime("%Y-%m-%d %H:%M:%S", time.localtime())
+                print(session.get('time_start'))
+                print(session.get('time_end'))
+                time_start = datetime.strptime(session.get('time_start'),"%Y-%m-%d %H:%M:%S")
+                time_end =  datetime.strptime(session.get('time_end'),"%Y-%m-%d %H:%M:%S")
+                working_time = (time_end - time_start).seconds
+                print(working_time)
+                Activity_time = session.get('time_end')
+                Sum_timeNew = working_time + session.get('Sum_time') 
+                print(session['Sum_time'])
+                print(Sum_timeNew)
+                cur4 = db.cursor()
+                cur4.execute('update task set Activity_time=? where User_ID=? and Side_number=?',(Activity_time,ID,session.get('Side_number')))
+                cur4.execute('update task set Sum_time=? where User_ID=? and Side_number=?',(Sum_timeNew,ID,session.get('Side_number')))
+                db.commit()
+
+                ## change the side number
+                session['Side_number'] = session.get('Side_number_now')
+                cur6 = db.cursor()
+                cur6.execute('select * from task where  User_ID =? and Side_number = ?',[ID,session.get('Side_number')])
+                result6 = cur6.fetchone()
+                print(result6)
+                if result6 == None:
+                    flash('Please enter a new task!')
+                    db.commit()
+                    return render_template('index.html',Side_number = session.get('Side_number'),Task_name='',Activity_time='',Actyvity_type='',Sum_hour=0,Sum_min=0,Sum_second=0)
+                else:
+                    Task_name= result6[2]
+                    Activity_time = result6[3]
+                    Activity_type= result6[4]
+                    session['Sum_time'] = result6[5]
                     print(session.get('Sum_time'))
                     Sum_hour = int(session.get('Sum_time')/60/60)  ##hours
                     Sum_min = int(session.get('Sum_time')/60)-Sum_hour*60   ## minutes
                     Sum_second = session.get('Sum_time') - Sum_hour*60*60-Sum_min*60  ##seconds
                     print(session.get('Side_number'),Task_name, Activity_time, Activity_type,session.get('Sum_time'))
                     return render_template('index.html',Side_number = session.get('Side_number'),Task_name=Task_name,Activity_time=Activity_time,Actyvity_type=Activity_type,Sum_hour=Sum_hour,Sum_min=Sum_min,Sum_second=Sum_second)
-            else:
-                session['Side_number'] = session.get('Side_number_now')
-                Sum_timeNew = 0   ### start calculate the last task's sum time
-                session['time_end'] = time.strftime("%Y-%m-%d %H:%M:%S", time.localtime())
-                print(session.get('time_start'))
-                print(session.get('time_end'))
-                time_start = datetime.strptime(session['time_start'],"%Y-%m-%d %H:%M:%S")
-                time_end =  datetime.strptime(session['time_end'],"%Y-%m-%d %H:%M:%S")
-                working_time = (time_end - time_start).seconds
-                Activity_time = session.get('time_end')
-                Sum_timeNew = working_time + session.get('Sum_time') 
-                print(session['Sum_time'])
-                print(Sum_timeNew)
-                cur3 = db.cursor()
-                cur3.execute('update task set Activity_time=? where User_ID=? and Side_number=?',(Activity_time,ID,session.get('Side_number')))
-                cur3.execute('update task set Sum_time=? where User_ID=? and Side_number=?',(Sum_timeNew,ID,session.get('Side_number')))
-                db.commit()
-                return render_template('index.html')
-        
+
 @app.route('/endTask',methods = ['GET','POST'])
 def endTask():
     if request.method == "GET":
@@ -173,7 +227,7 @@ def endTask():
         sql = 'update task set Side_number=? where User_ID=? and Side_number=?'
         cur2.execute(sql,c2)
         db.commit()
-        return redirect(url_for('index'))
+        return redirect(url_for("index"))
 
 
 @app.route('/upgradeNewtask',methods =['GET','POST'])
@@ -270,8 +324,9 @@ def upgradeTask_name():
 def logout():
             ID =session.get('userID') 
             Side_number = session.get('Side_number') 
-            Sum_timeNew = 0   ### start calculate the last task's sum time
-            session['Side_number'] = session.get('Side_numberChange')
+            Sum_timeNew = 0   
+
+            ### start calculate the last task's sum time
             session['time_end'] = time.strftime("%Y-%m-%d %H:%M:%S", time.localtime())
             print(session.get('time_start'))
             print(session.get('time_end'))
@@ -279,6 +334,7 @@ def logout():
             time_end =  datetime.strptime(session['time_end'],"%Y-%m-%d %H:%M:%S")
             working_time = (time_end - time_start).seconds
             Activity_time = session.get('time_end')
+            if session.get('Sum_time')== None: session['Sum_time'] = 0
             Sum_timeNew = working_time + session.get('Sum_time') 
             print(session['Sum_time'])
             print(Sum_timeNew)
@@ -286,10 +342,12 @@ def logout():
             cur.execute('update task set Activity_time=? where User_ID=? and Side_number=?',(Activity_time,ID,Side_number))
             cur.execute('update task set Sum_time=? where User_ID=? and Side_number=?',(Sum_timeNew,ID,Side_number))
             db.commit()
+            cur1 = db.cursor()
+            cur1.execute('update Userinformation set Side_number_now=? where User_ID=?',(6,ID))
+            db.commit()
             session.clear()
             return redirect(url_for('login'))  
 
-
 if __name__ == 'main':
-    app.run(debug = True, host='0.0.0.0', port=5000)
+    app.run( host='0.0.0.0', port=5000,debug = True)
     db.close()

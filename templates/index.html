@@ -1,41 +1,131 @@
-{% extends "base.html" %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1" />	<title>Index</title>
+<script src="https://code.jquery.com/jquery-3.1.1.min.js"></script>
+   <style type="text/css">
+	body,input{
+		   margin: 0;
+		padding: 0;
+	}
+	.login_bg{
+	 background:url(static/images/background.jpg) no-repeat center;
+    background-size: 100% 100%;
+background-attachment: fixed;
+	}
+	.body_by{
+        text-align:center;
+	    height: 200px;
+		width: 80%;
+	top: 20px;
+		margin: 0 auto;
+	}
+	.index_box{
+	   position: relative;
+		height: 400px;
+		width: 60%;
+        opacity:0.8;
+		top: 20px;
+		margin: 0 auto;
+		z-index: 99999;
+		background:#fff;
+		border: 7px solid #ccc;
+	}
+	  #show{
+        font-size: 20px;
+        color:#4213C9;
+        text-align:center;
+    }
+    .tr{
+		margin-top: 20px;
+    }
+    .contrrl{
+       display: inline-block;
+       position:relative;
+       float: left;
+    }
+    
+    .contrrl ul {
+      list-style: none;
+    }
+    .contrrl ul li {
+     float:left;
+   	width: 25%;
+     text-align: center;
+     position:relative;
+     }
+     .butoon{    
+   	width: 60%;
+       }
+	</style>
+</head>
 
-    {%block head%}
+<body class="login_bg">
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
-    {% endblock %}
-    {% block main %}
-    <div >
-        <span>Task number: {{ Side_number }}</span>
+	<div class="index_box">
+    <div class="body_by">
+      <div class="navbar">
+        <div class="navbar-top">
+            {% if username %}
+                <li><a>username：{{ username }}</a></li>
+                <li><a>userID：{{ userID }}</a></li>
+                <li style="float:right"><a href="{{ url_for('index') }}">index</a></li>
+                <li style="float:right"><a href="{{ url_for('logout') }}">logout</a></li>
+            {% else %}
+                <li style="float:right"><a href="{{ url_for('register') }}">register</a></li>
+                <li style="float:right"><a href="{{ url_for('login') }}">login</a></li>
+            {% endif %}
+        </nav>
+    </div>
+    <div class="tr">
+        <span id="numbreid">Task number:&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp &nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp {{ Side_number }}</span>
     </div>
 
-    <div >
-        <span>Task Name: {{ Task_name }}</span>
+    <div class="tr">
+        <span>Task Name: &nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp{{ Task_name }}</span>
     </div>
 
-    <div >
-        <span>Last Activity time: {{ Activity_time }}</span>
+    <div class="tr">
+        <span>Last Activity time:  &nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp{{ Activity_time }}</span>
     </div>
 
-    <div >
-        <span>Task Status: {{ Actyvity_type }}</span>
+    <div class="tr">
+        <span id="status">Task Status: &nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp{{ Actyvity_type }}</span>
     </div>
 
-    <div >
-        <span>Sum time: {{ Sum_hour }} h {{Sum_min}} min {{Sum_second}} s</span>
+    <div class="tr">
+        <span id="endtime">Sum time:&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp &nbsp&nbsp&nbsp<span id="show"> {{ Sum_hour }} h {{Sum_min}} min {{Sum_second}} s</span></span>
     </div>
-
-     <div>
-        <a href="/upgradeNewtask" ><button type = "button" value= "Add a new task">Add a new task</button></a>
+    
+    <div class="tr contrrl">
+    <ul>
+     <li>
+       <a href="/upgradeNewtask" >
+        <img alt="addtask" src="static/images/addtask.png" style="width: 30%;height: 30% "><br/>
+        <button  class="butoon" type = "button" value= "Add a new task">Add a new task</button></a>
+     </li>
+     <li>
+     <a href="/upgradeSide_num" >
+        <img alt="changetasknumber" src="static/images/change.png" style="width: 30%;height: 30% "><br/>
+       <button class="butoon" type = "button" value="Change the side number">Change the side number</button></a>
+     </li>
+      <li>
+     <a href="/upgradeTask_name" >
+        <img alt="changetaskname" src="static/images/change.png" style="width: 30%;height: 30% "><br/>
+       <button class="butoon" type = "button" value="Change the Task name">Change the task name</button></a>
+     </li>
+     <li>
+      <a href="/endTask"  >
+        <img alt="endtask" src="static/images/end.png" style="width: 30%;height: 30% "><br/>
+      <button class="butoon" type = "button" value="end the task">end the task</button></a>
+     </li> 
+     </ul>
      </div>
-     <div>
-        <a href="/upgradeSide_num" ><button type = "button" value="Change the side number">Change the side number</button></a>
-     </div>
-     <div>
-        <a href="/upgradeTask_name" ><button type = "button" value="Change your task name">Change your task name</button></a>
-     </div>
-     <div>
-        <a href="/endTask" ><button type = "button" value="end the task">end the task</button></a>
-     </div>
-{% endblock %}
+     </div> 
+</div>
+</body>
+</html>
+
 
 
