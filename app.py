@@ -97,7 +97,7 @@ def register():
         cur.execute('select * from UserInformation where User_name =? and User_ID =?',[username,userID])
         if  cur.fetchone() is None:
             if password1 == password2:
-                sql = 'insert into UserInformation (User_ID, User_name, Password,Side_number_now)''values(?,?,?)'
+                sql = 'insert into UserInformation (User_ID, User_name, Password,Side_number_now)''values(?,?,?,?)'
                 data = (userID,username,password1,6)
                 cur.execute(sql,data)
                 db.commit()
