@@ -17,7 +17,7 @@ db = sqlite3.connect('G:/pythonproject/env/user.db', check_same_thread=False)
 ## make sure the user has logined
 @app.before_request
 def login_required():
-    if request.path in ['/login','/register','/Connection_check']: 
+    if request.path in ['/','/login','/register','/Connection_check']: 
         return None
     user=session.get('userID')  
     if not user:              
@@ -47,11 +47,29 @@ def Connection_check():
         print(session.get('time_start'))
         return ('Successfully change the side of tube!')
 
+## Using QR code to connect to server
+@app.route('/', methods =  ['GET','POST'])
+def QRcheck():
+    if request.method =="GET":
+        session['userID'] = request.args.get('userID')
+        print (session.get('userID'))
+        cur = db.cursor()
+        cur.execute('select * from Userinformation where User_ID=?',[session.get('userID')])
+        result = cur.fetchone()
+        db.commit
+        if result is not None:
+            return redirect(url_for('login'))
+        else:
+            return redirect(url_for('register'))
+
+
 ## login
 @app.route('/login', methods = ['GET','POST'])
 def login():
+    if request.method == "GET":
+        return render_template('login.html')
     if request.method == "POST":
-        ID = request.form.get('userID')
+        ID = session.get('userID')
         name = request.form.get('username')
         password = request.form.get('userPassword')
         cur = db.cursor()
@@ -88,7 +106,7 @@ def register():
     if request.method == 'GET':
         return render_template('register.html')
     if request.method =='POST':
-        userID = request.form.get('userID')
+        userID = session.get('userID')
         username = request.form.get('username')
         password1 = request.form.get('userPassword')
         password2 = request.form.get('userRePassword')
